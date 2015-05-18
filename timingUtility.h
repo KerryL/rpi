@@ -20,16 +20,18 @@ public:
 	TimingUtility(double timeStep, std::ostream &outStream = std::cout);
 
 	void SetLoopTime(double timeStep);
-	bool TimeLoop(void);
-	double GetTimeStep(void) const { return timeStep; };// [sec]
+	bool TimeLoop();
+	double GetTimeStep() const { return timeStep; };// [sec]
 
-	std::string GetTimingStatistics(void) const;
+	std::string GetTimingStatistics() const;
 
 	static clockid_t clockID;
 	static bool GetCurrentTime(struct timespec &ts);
 	static bool GetResolution(struct timespec &ts);
 	static struct timespec GetDeltaTime(const struct timespec &newTime, const struct timespec &oldTime);
 	static double TimespecToSeconds(const struct timespec &ts);
+	static unsigned long long GetMillisecondsSinceEpoch();
+	static void SleepUntil(struct tm &targetTime);
 
 private:
 	std::ostream &outStream;

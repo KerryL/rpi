@@ -123,7 +123,7 @@ void TimingUtility::SetLoopTime(double timeStep)
 //		bool, true for success, false otherwise
 //
 //==========================================================================
-bool TimingUtility::TimeLoop(void)
+bool TimingUtility::TimeLoop()
 {
 	if (counts[0] > 0)
 	{
@@ -276,7 +276,7 @@ double TimingUtility::TimespecToSeconds(const struct timespec &ts)
 //		None
 //
 //==========================================================================
-void TimingUtility::UpdateTimingStatistics(void)
+void TimingUtility::UpdateTimingStatistics()
 {
 	struct timespec now;
 	if (!TimingUtility::GetCurrentTime(now))
@@ -328,7 +328,7 @@ void TimingUtility::UpdateTimingStatistics(void)
 //		std::string
 //
 //==========================================================================
-std::string TimingUtility::GetTimingStatistics(void) const
+std::string TimingUtility::GetTimingStatistics() const
 {
 	unsigned int i;
 	std::vector<double> timeAtStep;
@@ -420,4 +420,64 @@ std::string TimingUtility::MakeColumn(std::string s, unsigned int columnWidth, c
 		s.append(std::string(columnWidth - s.length(), pad));
 
 	return s;
+}
+
+//==========================================================================
+// Class:			TimingUtility
+// Function:		GetMillisecondsSinceEpoch
+//
+// Description:		Returns the current time in "milliseconds since unix epoch."
+//
+// Input Arguments:
+//		None
+//
+// Output Arguments:
+//		None
+//
+// Return Value:
+//		unsigned long long
+//
+//==========================================================================
+unsigned long long TimingUtility::GetMillisecondsSinceEpoch(void)
+{
+	unsigned long long seconds = time(NULL);
+	unsigned long long msecs;
+#ifdef _WIN32
+	// msec since system was started - keep only the fractional part
+	// Windows doesn't have a similar function, so we just make it up.
+	// Also needs work here (TODO)
+	msecs = 0;
+#else
+	/*struct timeval tp;
+	gettimeofday(&tp);
+	long long ms = tp.tv_sec * 1000LL + tp.tv_usec / 1000LL;*/
+	// FIXME:  Linux implementation needs work
+	// See: http://stackoverflow.com/questions/1952290/how-can-i-get-utctime-in-milisecond-since-january-1-1970-in-c-language
+	msecs = 0;
+#endif
+
+	return seconds * 1000LL + msecs;
+}
+
+//==========================================================================
+// Class:			TimingUtility
+// Function:		SleepUntil
+//
+// Description:		Sleeps until the specified time.
+//
+// Input Arguments:
+//		targetTime	= struct tm&
+//
+// Output Arguments:
+//		None
+//
+// Return Value:
+//		None
+//
+//==========================================================================
+void TimingUtility::SleepUntil(struct tm &targetTime)
+{
+	double sleepTime = difftime(mktime(&targetTime), time(NULL));
+	assert(sleepTime > 0.0);
+	sleep((unsigned long long)sleepTime);
 }

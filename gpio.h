@@ -24,13 +24,13 @@ public:
 		PullDown
 	};
 
-	GPIO(int pin, DataDirection direction = DirectionInput);
+	GPIO(const int &pin, const DataDirection &direction);
 	virtual ~GPIO();
 
-	void SetDataDirection(DataDirection direction);
-	void SetPullUpDown(PullResistance state);
-	void SetOutput(bool high);
-	bool GetInput(void);
+	void SetDataDirection(const DataDirection &direction);
+	void SetPullUpDown(const PullResistance &state);
+	void SetOutput(const bool &high);
+	bool GetInput();
 
 protected:
 	const int pin;

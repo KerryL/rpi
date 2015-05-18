@@ -38,9 +38,9 @@ bool GPIO::initialized = false;
 // Description:		Constructor for GPIO class.
 //
 // Input Arguments:
-//		pin			= int, pin number using Wiring Pi numbering scheme.
+//		pin			= const int&, pin number using Wiring Pi numbering scheme.
 //					  See:  http://wiringpi.com/pins/
-//		direction	= DataDirection
+//		direction	= const DataDirection&
 //
 // Output Arguments:
 //		None
@@ -49,7 +49,7 @@ bool GPIO::initialized = false;
 //		None
 //
 //==========================================================================
-GPIO::GPIO(int pin, DataDirection direction) : pin(pin)
+GPIO::GPIO(const int &pin, const DataDirection &direction) : pin(pin)
 {
 	if (!initialized)
 	{
@@ -91,7 +91,7 @@ GPIO::~GPIO()
 // Description:		Sets the data direction for the pin.
 //
 // Input Arguments:
-//		direction	= DataDirection
+//		direction	= const DataDirection&
 //
 // Output Arguments:
 //		None
@@ -100,7 +100,7 @@ GPIO::~GPIO()
 //		None
 //
 //==========================================================================
-void GPIO::SetDataDirection(DataDirection direction)
+void GPIO::SetDataDirection(const DataDirection &direction)
 {
 	assert(direction != DirectionPWMOutput || pin == 1);
 
@@ -126,7 +126,7 @@ void GPIO::SetDataDirection(DataDirection direction)
 // Description:		Sets the state of the optional internal pull-up/pull-down resistors.
 //
 // Input Arguments:
-//		state	= PullResistance
+//		state	= const PullResistance&
 //
 // Output Arguments:
 //		None
@@ -135,7 +135,7 @@ void GPIO::SetDataDirection(DataDirection direction)
 //		None
 //
 //==========================================================================
-void GPIO::SetPullUpDown(PullResistance state)
+void GPIO::SetPullUpDown(const PullResistance &state)
 {
 	assert(state == PullOff || direction == DirectionInput);
 
@@ -156,7 +156,7 @@ void GPIO::SetPullUpDown(PullResistance state)
 // Description:		Sets the state of the output pin.
 //
 // Input Arguments:
-//		high	= bool, true for high, false for low
+//		high	= const bool&, true for high, false for low
 //
 // Output Arguments:
 //		None
@@ -165,7 +165,7 @@ void GPIO::SetPullUpDown(PullResistance state)
 //		None
 //
 //==========================================================================
-void GPIO::SetOutput(bool high)
+void GPIO::SetOutput(const bool &high)
 {
 	assert(direction == DirectionOutput);
 
@@ -188,7 +188,7 @@ void GPIO::SetOutput(bool high)
 //		bool, true for high, false otherwise
 //
 //==========================================================================
-bool GPIO::GetInput(void)
+bool GPIO::GetInput()
 {
 	assert(direction == DirectionInput);
 	return digitalRead(pin) == 1;
