@@ -21,7 +21,7 @@ public:
 		EdgePreconfigured
 	};
 
-	typedef void InterruptServiceRoutine();
+	typedef void (*InterruptServiceRoutine)();
 
 	Interrupt(const int &pin, const InterruptServiceRoutine isr,
 		const EdgeDirection &edge = EdgeRising);
