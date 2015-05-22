@@ -11,8 +11,12 @@
 #include <iomanip>
 #include <sstream>
 
-// *nix standard headers
+// OS headers
+#ifdef _WIN32
+#include <Windows.h>
+#else
 #include <unistd.h>
+#endif
 
 // Local headers
 #include "timingUtility.h"
@@ -479,5 +483,10 @@ void TimingUtility::SleepUntil(struct tm &targetTime)
 {
 	double sleepTime = difftime(mktime(&targetTime), time(NULL));
 	assert(sleepTime > 0.0);
+	sleepTime += 0.5;// to correct for any rounding issues (always round up)
+#ifdef _WIN32
+	Sleep((unsigned int)sleepTime * 1000);
+#else
 	sleep((unsigned long long)sleepTime);
+#endif
 }
