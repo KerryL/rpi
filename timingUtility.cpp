@@ -439,13 +439,13 @@ std::string TimingUtility::MakeColumn(std::string s, unsigned int columnWidth, c
 //		None
 //
 // Return Value:
-//		unsigned long long
+//		ULongLong
 //
 //==========================================================================
-unsigned long long TimingUtility::GetMillisecondsSinceEpoch(void)
+ULongLong TimingUtility::GetMillisecondsSinceEpoch(void)
 {
-	unsigned long long seconds = time(NULL);
-	unsigned long long msecs;
+	ULongLong seconds = time(NULL);
+	ULongLong msecs;
 #ifdef _WIN32
 	// msec since system was started - keep only the fractional part
 	// Windows doesn't have a similar function, so we just make it up.
@@ -454,7 +454,7 @@ unsigned long long TimingUtility::GetMillisecondsSinceEpoch(void)
 #else
 	/*struct timeval tp;
 	gettimeofday(&tp);
-	long long ms = tp.tv_sec * 1000LL + tp.tv_usec / 1000LL;*/
+	LongLong ms = tp.tv_sec * 1000LL + tp.tv_usec / 1000LL;*/
 	// FIXME:  Linux implementation needs work
 	// See: http://stackoverflow.com/questions/1952290/how-can-i-get-utctime-in-milisecond-since-january-1-1970-in-c-language
 	msecs = 0;
@@ -487,6 +487,6 @@ void TimingUtility::SleepUntil(struct tm &targetTime)
 #ifdef _WIN32
 	Sleep((unsigned int)sleepTime * 1000);
 #else
-	sleep((unsigned long long)sleepTime);
+	sleep((ULongLong)sleepTime);
 #endif
 }
