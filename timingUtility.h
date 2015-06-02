@@ -14,6 +14,9 @@
 #include <map>
 #include <time.h>
 
+// utilities headers
+#include "utilities/portable.h"
+
 class TimingUtility
 {
 public:
@@ -30,7 +33,7 @@ public:
 	static bool GetResolution(struct timespec &ts);
 	static struct timespec GetDeltaTime(const struct timespec &newTime, const struct timespec &oldTime);
 	static double TimespecToSeconds(const struct timespec &ts);
-	static unsigned long long GetMillisecondsSinceEpoch();
+	static ULongLong GetMillisecondsSinceEpoch();
 	static void SleepUntil(struct tm &targetTime);
 
 private:
