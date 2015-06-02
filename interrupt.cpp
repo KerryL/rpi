@@ -33,7 +33,7 @@
 //
 //==========================================================================
 Interrupt::Interrupt(const int &pin, const InterruptServiceRoutine isr,
-	const EdgeDirection &edge) : isr(isr)
+	const EdgeDirection &edge) : GPIO(pin, DirectionInput), isr(isr)
 {
 	int edgeFlag;
 	if (edge == EdgeRising)
