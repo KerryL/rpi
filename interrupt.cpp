@@ -47,5 +47,5 @@ Interrupt::Interrupt(const int &pin, const InterruptServiceRoutine isr,
 	else
 		assert(false);
 
-	wiringPiISR(pin, edge, isr);// TODO:  What do we expect this to return?
+	wiringPiISR(pin, edgeFlag, isr);// TODO:  What do we expect this to return?
 }
