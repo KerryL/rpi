@@ -1,4 +1,4 @@
-// File:  temperatureSensor.cpp
+// File:  ds18b20Sensor.cpp
 // Date:  9/17/2013
 // Auth:  K. Loux
 // Copy:  (c) Copyright 2013
@@ -19,7 +19,7 @@
 #include "temperatureSensor.h"
 
 //==========================================================================
-// Class:			TemperatureSensor
+// Class:			DS18B20
 // Function:		None
 //
 // Description:		Static and constant member initialization/definitions for
@@ -35,12 +35,12 @@
 //		None
 //
 //==========================================================================
-bool TemperatureSensor::initialized = false;
-const std::string TemperatureSensor::deviceFile = "/w1_slave";
+bool DS18B20::initialized = false;
+const std::string DS18B20::deviceFile = "/w1_slave";
 
 //==========================================================================
-// Class:			TemperatureSensor
-// Function:		TemperatureSensor
+// Class:			DS18B20
+// Function:		DS18B20
 //
 // Description:		Constructor for TemperatureSensor class.
 //
@@ -56,9 +56,10 @@ const std::string TemperatureSensor::deviceFile = "/w1_slave";
 //		None
 //
 //==========================================================================
-TemperatureSensor::TemperatureSensor(std::string deviceID,
-	std::ostream &outStream, std::string baseDirectory)
-	: deviceID(deviceID), device(baseDirectory + deviceID + deviceFile), outStream(outStream)
+DS18B20::DS18B20(std::string deviceID,
+	std::ostream &outStream, std::string baseDirectory, const unsigned int& allowedRecursions)
+	: deviceID(deviceID), device(baseDirectory + deviceID + deviceFile), outStream(outStream),
+	allowedRecursions(allowedRecursions)
 {
 	if (!initialized)
 	{
@@ -69,13 +70,13 @@ TemperatureSensor::TemperatureSensor(std::string deviceID,
 }
 
 //==========================================================================
-// Class:			TemperatureSensor
+// Class:			DS18B20
 // Function:		GetTemperature
 //
 // Description:		Reads current temperature from DS18B20 sensor.
 //
 // Input Arguments:
-//		allowedRecursion	= unsigned int, number of attempts to make in the event of repeated errors
+//		None
 //
 // Output Arguments:
 //		temperature	= double& [deg C]
@@ -84,30 +85,51 @@ TemperatureSensor::TemperatureSensor(std::string deviceID,
 //		bool, true for success, false otherwise
 //
 //==========================================================================
-bool TemperatureSensor::GetTemperature(double &temperature, unsigned int allowedRecursions) const
+bool DS18B20::GetTemperature(double &temperature) const
 {
-	if (allowedRecursions == 0)
+	return ReadSensor(temperature, allowedRecursions);
+}
+
+//==========================================================================
+// Class:			DS18B20
+// Function:		ReadSensor
+//
+// Description:		Reads current temperature from DS18B20 sensor.
+//
+// Input Arguments:
+//		recursion	= unsigned int, number of attempts to make in the event of repeated errors
+//
+// Output Arguments:
+//		temperature	= double& [deg C]
+//
+// Return Value:
+//		bool, true for success, false otherwise
+//
+//==========================================================================
+bool DS18B20::ReadSensor(double &temperature, unsigned int recursion) const
+{
+	if (recursion == 0)
 		return false;
 		
 	std::ifstream file(device.c_str(), std::ios::in);
 	if (!file.is_open() || !file.good())
 	{
 		outStream << "Could not open file '" << device << "' for input" << std::endl;
-		return GetTemperature(temperature, allowedRecursions - 1);
+		return ReadSensor(temperature, recursion - 1);
 	}
 
 	std::string data;
 	if (!std::getline(file, data))
 	{
 		outStream << "Failed to read CRC from file '" << device << "'" << std::endl;
-		return GetTemperature(temperature, allowedRecursions - 1);
+		return ReadSensor(temperature, recursion - 1);
 	}
 
 	// Line must contain at least "YES" at the end...
 	if (data.length() < 3)
 	{
 		outStream << "File contents too short (" << deviceID << ")" << std::endl;
-		return GetTemperature(temperature, allowedRecursions - 1);
+		return ReadSensor(temperature, recursion - 1);
 	}
 
 	if (data.substr(data.length() - 3).compare("YES") != 0)
@@ -115,13 +137,13 @@ bool TemperatureSensor::GetTemperature(double &temperature, unsigned int allowed
 		// This happens quite often - might want to disable this statement
 		// after testing is complete, to avoid spamming?
 		outStream << "Bad checksum (" << deviceID << ")" << std::endl;
-		return GetTemperature(temperature, allowedRecursions - 1);
+		return ReadSensor(temperature, recursion - 1);
 	}
 
 	if (!std::getline(file, data))
 	{
 		outStream << "Failed to read temperature from file '" << device << "'" << std::endl;
-		return GetTemperature(temperature, allowedRecursions - 1);
+		return ReadSensor(temperature, recursion - 1);
 	}
 
 	size_t start(data.find("t="));
@@ -129,7 +151,7 @@ bool TemperatureSensor::GetTemperature(double &temperature, unsigned int allowed
 	{
 		outStream << "Temperature reading does not contain 't='"
 			<< " (" << deviceID << ")" << std::endl;
-		return GetTemperature(temperature, allowedRecursions - 1);
+		return ReadSensor(temperature, recursion - 1);
 	}
 
 	temperature = atof(data.substr(start + 2).c_str()) / 1000.0;
@@ -138,7 +160,7 @@ bool TemperatureSensor::GetTemperature(double &temperature, unsigned int allowed
 }
 
 //==========================================================================
-// Class:			TemperatureSensor
+// Class:			DS18B20
 // Function:		GetConnectedSensors
 //
 // Description:		Returns vector of connected DS18B20 sensors.
@@ -153,7 +175,7 @@ bool TemperatureSensor::GetTemperature(double &temperature, unsigned int allowed
 //		std::vector<std::string>
 //
 //==========================================================================
-std::vector<std::string> TemperatureSensor::GetConnectedSensors(std::string searchDirectory)
+std::vector<std::string> DS18B20::GetConnectedSensors(std::string searchDirectory)
 {
 	// Assume that this might be called when a new sensor is connected - therefore, don't
 	// use the initialized variable to determine whether or not to make these calls
@@ -199,7 +221,7 @@ std::vector<std::string> TemperatureSensor::GetConnectedSensors(std::string sear
 }
 
 //==========================================================================
-// Class:			TemperatureSensor
+// Class:			DS18B20
 // Function:		DeviceIsDS18B20
 //
 // Description:		Checks to make sure specified ROM is that of a DS18B20.
@@ -214,7 +236,7 @@ std::vector<std::string> TemperatureSensor::GetConnectedSensors(std::string sear
 //		bool, true for yes, false otherwise
 //
 //==========================================================================
-bool TemperatureSensor::DeviceIsDS18B20(std::string rom)
+bool DS18B20::DeviceIsDS18B20(std::string rom)
 {
 	assert(rom.length() > 2);
 
