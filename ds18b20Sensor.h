@@ -36,8 +36,8 @@ private:
 	static const std::string deviceFile;
 
 	const std::string deviceID, device;
-	const unsigned int allowedRecursions;
 	std::ostream &outStream;
+	const unsigned int allowedRecursions;
 
 	bool ReadSensor(double &temperature, unsigned int recursion) const;// [deg C]
 };

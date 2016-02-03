@@ -16,7 +16,7 @@
 #include <dirent.h>
 
 // Local headers
-#include "temperatureSensor.h"
+#include "ds18b20Sensor.h"
 
 //==========================================================================
 // Class:			DS18B20
@@ -210,7 +210,7 @@ std::vector<std::string> DS18B20::GetConnectedSensors(std::string searchDirector
 	unsigned int i;
 	for (i = 0; i < deviceList.size(); i++)
 	{
-		if (!TemperatureSensor::DeviceIsDS18B20(deviceList[i]))
+		if (!DS18B20::DeviceIsDS18B20(deviceList[i]))
 		{
 			deviceList.erase(deviceList.begin() + i);
 			i--;
