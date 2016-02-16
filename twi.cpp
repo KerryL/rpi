@@ -3,9 +3,10 @@
 // Auth:  K. Loux
 // Desc:  Object for handling TWI communication with a slave device.
 
-// Standard C headers
+// Standard C/C++ headers
+#include <cassert>
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 //#include <fcntl.h>
 //#include <string.h>
 #include <sys/ioctl.h>
@@ -14,56 +15,45 @@
 
 // Linux headers
 #include <linux/i2c-dev.h>
-//#include <unistd.h>
+#include <unistd.h>
 
 // Local headers
 #include "twi.h"
 
-TWI::TWI(const std::string& address, std::ostream& outStream),
-	address(address), outStream(outStream)
-{
-	fd = -1;
-	connectionOK = false;
-}
+const unsigned int TWI::bufferSize(10);
 
-TWI::~TWI()
+TWI::TWI(const std::string& deviceFileName, const unsigned char& address,
+	std::ostream& outStream), address(address), outStream(outStream)
 {
-	if (fd >= 0)
-		close(fd);
-}
-
-bool TWI::Open(const std::string& deviceFileName)
-{
-	fd = open(deviceFileName.c_str(), O_RDWR);
-	if (fd < 0)
-	{
-		outStream << "Failed to open twi port" << std::endl;
-		connectionOK = false;
-	}
-	else
-		connectionOK = true;
-
-	return connectionOK;
+	busFileDescriptor = open(deviceFileName.c_str(), O_RDWR);
 }
 
 bool TWI::Write(const std::vector<unsigned char>& data) const
 {
-	if (ioctl(fd, I2C_SLAVE, address) < 0)
+	assert(ConnectionOK());
+	assert(data.size() > 0);
+	assert(data.size() < bufferSize);
+
+	if (ioctl(fd, I2C_SLAVE, address) == -1)
 	{
-		outStream << "Failed to get bus access" << std::endl;
-		connectionOK = false;
+		outStream << "Failed to get bus access:  " << GetErrorString() << std::endl;
 		return false;
 	}
 
 	unsigned int i;
 	for (i = 0; i < data.size(); i++)
+		buffer[i] = data[i];
+
+	int writeSize = write(fd, buffer, data.size());
+	if (writeSize == -1)
 	{
-		if (write(fd, data[i], 1) != 1)
-		{
-			outStream << "Failed to write to slave" << std::endl;
-			connectionOK = false;
-			return false;
-		}
+		outStream << "Failed to write to slave:  " << GetErrorString() << std::endl;
+		return false;
+	}
+	else if (writeSize != data.size())
+	{
+		outStream << "Wrong number of bytes written" << std::endl;
+		return false;
 	}
 
 	return true;
@@ -71,14 +61,12 @@ bool TWI::Write(const std::vector<unsigned char>& data) const
 
 bool TWI::Read(std::vector<unsigned char>& data) const
 {
-	const unsigned int bufferSize(10);
-	unsigned char buffer[bufferSize];
-	int readSize = read(fd, buffer, bufferSize)
+	assert(ConnectionOK());
 
-	if (readSize <= 0)
+	int readSize = read(fd, buffer, bufferSize);
+	if (readSize == -1)
 	{
-		outStream << "Failed to read from slave" << std::endl;
-		connectionOK = false;
+		outStream << "Failed to read from slave:  " << GetErrorString() << std::endl;
 		return false;
 	}
 
@@ -90,3 +78,14 @@ bool TWI::Read(std::vector<unsigned char>& data) const
 	return true;
 }
 
+bool TWI::ConnectionOK() const
+{
+	return busFileDescriptor != -1;
+}
+
+std::string TWI::GetErrorString() const
+{
+	std::ostringstream ss;
+	ss << "(" << errno << ") " << strerror(errno);
+	return ss.str();
+}

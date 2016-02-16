@@ -9,27 +9,29 @@
 // Standard C++ headers
 #include <string>
 #include <vector>
-#include <ostream>
+#include <iostream>
 
 class TWI
 {
 public:
-	TWI(const unsigned char& address, std::ostream& outStream = std::cout);
-	~TWI();
-
-	bool Open(const std::string& deviceFileName);
+	TWI(const std::string& deviceFileName, const unsigned char& address,
+		std::ostream& outStream = std::cout);
+	virtual ~TWI() {}
 
 	bool Write(const std::vector<unsigned char>& data) const;
 	bool Read(std::vector<unsigned char>& data) const;
 
-	bool ConnectionOK() const { return connectionOK; }
+	bool ConnectionOK() const;
+
+	std::string GetErrorString() const;
 
 private:
 	const unsigned char address;
 	std::ostream& outStream;
-	bool connectionOK;
 
-	int fd;
+	int busFileDescriptor;
+	static const unsigned int bufferSize;
+	unsigned char buffer[bufferSize];
 };
 
 #endif// TWI_H_
