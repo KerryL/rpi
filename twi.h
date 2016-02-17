@@ -16,7 +16,7 @@ class TWI
 public:
 	TWI(const std::string& deviceFileName, const unsigned char& address,
 		std::ostream& outStream = std::cout);
-	virtual ~TWI() {}
+	virtual ~TWI();
 
 	bool Write(const std::vector<unsigned char>& data) const;
 	bool Read(std::vector<unsigned char>& data) const;
@@ -27,11 +27,13 @@ public:
 
 private:
 	const unsigned char address;
-	std::ostream& outStream;
 
 	int busFileDescriptor;
 	static const unsigned int bufferSize;
-	unsigned char buffer[bufferSize];
+	unsigned char *buffer;
+
+protected:
+	std::ostream& outStream;
 };
 
 #endif// TWI_H_
