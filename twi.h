@@ -19,7 +19,8 @@ public:
 	virtual ~TWI();
 
 	bool Write(const std::vector<unsigned char>& data) const;
-	bool Read(std::vector<unsigned char>& data) const;
+	bool Read(std::vector<unsigned char>& data,
+		const unsigned short& size) const;
 
 	bool ConnectionOK() const;
 

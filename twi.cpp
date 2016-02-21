@@ -62,11 +62,13 @@ bool TWI::Write(const std::vector<unsigned char>& data) const
 	return true;
 }
 
-bool TWI::Read(std::vector<unsigned char>& data) const
+bool TWI::Read(std::vector<unsigned char>& data,
+	const unsigned short& size) const
 {
 	assert(ConnectionOK());
+	assert(size <= bufferSize);
 
-	int readSize = read(busFileDescriptor, buffer, bufferSize);
+	int readSize = read(busFileDescriptor, buffer, size);
 	if (readSize == -1)
 	{
 		outStream << "Failed to read from slave:  " << GetErrorString() << std::endl;
