@@ -16,17 +16,18 @@
 
 // utilities headers
 #include "utilities/portable.h"
+#include "utilities/uString.h"
 
 class TimingUtility
 {
 public:
-	TimingUtility(double timeStep, std::ostream &outStream = std::cout);
+	TimingUtility(double timeStep, UString::OStream &outStream = Cout);
 
 	void SetLoopTime(double timeStep);
 	bool TimeLoop();
-	double GetTimeStep() const { return timeStep; };// [sec]
+	double GetTimeStep() const { return timeStep; }// [sec]
 
-	std::string GetTimingStatistics() const;
+	UString::String GetTimingStatistics() const;
 
 	static clockid_t clockID;
 	static bool GetCurrentTime(struct timespec &ts);
@@ -37,7 +38,7 @@ public:
 	static void SleepUntil(struct tm &targetTime);
 
 private:
-	std::ostream &outStream;
+	UString::OStream &outStream;
 
 	double timeStep, elapsed;// [sec]
 	struct timespec loopTime;
@@ -45,10 +46,10 @@ private:
 	bool loopStarted;
 
 	// For timing statistics
-	void UpdateTimingStatistics(void);
+	void UpdateTimingStatistics();
 	double AverageVector(const std::vector<double> &v) const;
-	std::string MakeColumn(double value, unsigned int columnWidth) const;
-	std::string MakeColumn(std::string s, unsigned int columnWidth, char pad = ' ') const;
+	UString::String MakeColumn(double value, unsigned int columnWidth) const;
+	UString::String MakeColumn(UString::String s, unsigned int columnWidth, UString::Char pad = UString::Char(' ')) const;
 
 	unsigned int currentIndex;
 	std::map<double, unsigned int> stepIndices;

@@ -56,7 +56,7 @@ clockid_t TimingUtility::clockID = CLOCK_MONOTONIC;
 //		None
 //
 //==========================================================================
-TimingUtility::TimingUtility(double timeStep, std::ostream &outStream) : outStream(outStream)
+TimingUtility::TimingUtility(double timeStep, UString::OStream &outStream) : outStream(outStream)
 {
 	SetLoopTime(timeStep);
 }
@@ -329,16 +329,15 @@ void TimingUtility::UpdateTimingStatistics()
 //		None
 //
 // Return Value:
-//		std::string
+//		UString::String
 //
 //==========================================================================
-std::string TimingUtility::GetTimingStatistics() const
+UString::String TimingUtility::GetTimingStatistics() const
 {
-	unsigned int i;
 	std::vector<double> timeAtStep;
 	double totalTime(0.0);// [sec]
 	std::map<double, unsigned int>::const_iterator it(stepIndices.begin());
-	for (i = 0; i < counts.size(); i++)
+	for (unsigned int i = 0; i < counts.size(); i++)
 	{
 		timeAtStep.push_back(it->first * counts[it->second]);
 		totalTime += timeAtStep[i];
@@ -347,9 +346,9 @@ std::string TimingUtility::GetTimingStatistics() const
 
 	const unsigned int titleColumnWidth(24), dataColumnWidth(12);
 
-	std::stringstream ss;
+	UString::OStringStream ss;
 	it = stepIndices.begin();
-	for (i = 0; i < counts.size(); i++)
+	for (unsigned int i = 0; i < counts.size(); i++)
 	{
 		ss << "Time step = " << it->first <<
 			" sec (" << timeAtStep[i] / totalTime * 100.0 << "% of total loop time)" << std::endl;
@@ -389,12 +388,12 @@ std::string TimingUtility::GetTimingStatistics() const
 //		None
 //
 // Return Value:
-//		std::string
+//		UString::String
 //
 //==========================================================================
-std::string TimingUtility::MakeColumn(double value, unsigned int columnWidth) const
+UString::String TimingUtility::MakeColumn(double value, unsigned int columnWidth) const
 {
-	std::stringstream ss;
+	UString::OStringStream ss;
 	ss.precision(6);
 	ss << std::fixed << value;
 	return MakeColumn(ss.str(), columnWidth);
@@ -407,18 +406,18 @@ std::string TimingUtility::MakeColumn(double value, unsigned int columnWidth) co
 // Description:		Formats the argument into a fixed-width right-padded string.
 //
 // Input Arguments:
-//		s			= std::string
+//		s			= UString::String
 //		columnWidth	= unsigned int
-//		pad			= char
+//		pad			= UString::Char
 //
 // Output Arguments:
 //		None
 //
 // Return Value:
-//		std::string
+//		UString::String
 //
 //==========================================================================
-std::string TimingUtility::MakeColumn(std::string s, unsigned int columnWidth, char pad) const
+UString::String TimingUtility::MakeColumn(UString::String s, unsigned int columnWidth, UString::Char pad) const
 {
 	if (s.length() < columnWidth)
 		s.append(std::string(columnWidth - s.length(), pad));
@@ -442,9 +441,9 @@ std::string TimingUtility::MakeColumn(std::string s, unsigned int columnWidth, c
 //		ULongLong
 //
 //==========================================================================
-ULongLong TimingUtility::GetMillisecondsSinceEpoch(void)
+ULongLong TimingUtility::GetMillisecondsSinceEpoch()
 {
-	ULongLong seconds = time(NULL);
+	ULongLong seconds = time(nullptr);
 	ULongLong msecs;
 #ifdef _WIN32
 	// msec since system was started - keep only the fractional part
@@ -481,7 +480,7 @@ ULongLong TimingUtility::GetMillisecondsSinceEpoch(void)
 //==========================================================================
 void TimingUtility::SleepUntil(struct tm &targetTime)
 {
-	double sleepTime = difftime(mktime(&targetTime), time(NULL));
+	double sleepTime = difftime(mktime(&targetTime), time(nullptr));
 	assert(sleepTime > 0.0);
 	sleepTime += 0.5;// to correct for any rounding issues (always round up)
 #ifdef _WIN32
