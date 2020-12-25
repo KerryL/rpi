@@ -18,11 +18,12 @@
 
 // Local headers
 #include "temperatureSensor.h"
+#include "utilities/uString.h"
 
 class DS18B20 : public TemperatureSensor
 {
 public:
-	DS18B20(std::string deviceID, std::ostream& outStream = std::cout,
+	DS18B20(std::string deviceID, UString::OStream& outStream = Cout,
 		std::string baseDirectory = "/sys/bus/w1/devices/", const unsigned int& allowedRecursions = 3);
 
 	virtual bool GetTemperature(double &temperature) const;// [deg C]
@@ -36,7 +37,7 @@ private:
 	static const std::string deviceFile;
 
 	const std::string deviceID, device;
-	std::ostream &outStream;
+	UString::OStream &outStream;
 	const unsigned int allowedRecursions;
 
 	bool ReadSensor(double &temperature, unsigned int recursion) const;// [deg C]

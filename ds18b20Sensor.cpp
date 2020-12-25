@@ -46,7 +46,7 @@ const std::string DS18B20::deviceFile = "/w1_slave";
 //
 // Input Arguments:
 //		deviceID		= std::string, unique idenfier for sensor
-//		outStream		= std::ostream& (optional)
+//		outStream		= UString::OStream& (optional)
 //		baseDirectory	= std::string (optional, default should be fine for Raspian OS)
 //
 // Output Arguments:
@@ -57,7 +57,7 @@ const std::string DS18B20::deviceFile = "/w1_slave";
 //
 //==========================================================================
 DS18B20::DS18B20(std::string deviceID,
-	std::ostream &outStream, std::string baseDirectory, const unsigned int& allowedRecursions)
+	UString::OStream &outStream, std::string baseDirectory, const unsigned int& allowedRecursions)
 	: deviceID(deviceID), device(baseDirectory + deviceID + deviceFile), outStream(outStream),
 	allowedRecursions(allowedRecursions)
 {
