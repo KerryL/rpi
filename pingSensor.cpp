@@ -32,7 +32,7 @@ bool PingSensor::GetDistance(double& distance)
 	if (duration > maxDuration * 1.05)// Allow some fudge room
 		return false;
 	
-	distance = std::chrono::duration<double>(duration).count() * speedOfSound;
+	distance = 0.5 * std::chrono::duration<double>(duration).count() * speedOfSound;
 	return true;
 }
 
