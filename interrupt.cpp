@@ -33,16 +33,16 @@
 //
 //==========================================================================
 Interrupt::Interrupt(const int &pin, const InterruptServiceRoutine isr,
-	const EdgeDirection &edge) : GPIO(pin, DirectionInput), isr(isr)
+	const EdgeDirection &edge) : GPIO(pin, DataDirection::Input), isr(isr)
 {
 	int edgeFlag;
-	if (edge == EdgeRising)
+	if (edge == EdgeDirection::Rising)
 		edgeFlag = INT_EDGE_RISING;
-	else if (edge == EdgeFalling)
+	else if (edge == EdgeDirection::Falling)
 		edgeFlag = INT_EDGE_FALLING;
-	else if (edge == EdgeBoth)
+	else if (edge == EdgeDirection::Both)
 		edgeFlag = INT_EDGE_BOTH;
-	else if (edge == EdgePreconfigured)
+	else if (edge == EdgeDirection::Preconfigured)
 		edgeFlag = INT_EDGE_SETUP;
 	else
 		assert(false);

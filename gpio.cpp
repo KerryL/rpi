@@ -57,7 +57,7 @@ GPIO::GPIO(const int &pin, const DataDirection &direction) : pin(pin)
 		initialized = true;
 	}
 
-	assert(pin >= 0 && pin <= 20);
+	assert(pin >= 0 && pin <= 40);
 	SetDataDirection(direction);
 }
 
@@ -102,18 +102,18 @@ GPIO::~GPIO()
 //==========================================================================
 void GPIO::SetDataDirection(const DataDirection &direction)
 {
-	assert(direction != DirectionPWMOutput || pin == 1);
+	assert(direction != DataDirection::PWMOutput || pin == 1);
 
-	if (direction == DirectionOutput)
-		SetPullUpDown(PullOff);
+	if (direction == DataDirection::Output)
+		SetPullUpDown(PullResistance::Off);
 
 	this->direction = direction;
 
-	if (direction == DirectionInput)
+	if (direction == DataDirection::Input)
 		pinMode(pin, INPUT);
-	else if (direction == DirectionOutput)
+	else if (direction == DataDirection::Output)
 		pinMode(pin, OUTPUT);
-	else if (direction == DirectionPWMOutput)
+	else if (direction == DataDirection::PWMOutput)
 		pinMode(pin, PWM_OUTPUT);
 	else
 		assert(false);
@@ -137,13 +137,13 @@ void GPIO::SetDataDirection(const DataDirection &direction)
 //==========================================================================
 void GPIO::SetPullUpDown(const PullResistance &state)
 {
-	assert(state == PullOff || direction == DirectionInput);
+	assert(state == PullResistance::PullOff || direction == DataDirection::Input);
 
-	if (state == PullOff)
+	if (state == PullResistance::Off)
 		pullUpDnControl(pin, PUD_OFF);
-	else if (state == PullUp)
+	else if (state == PullResistance::PullUp)
 		pullUpDnControl(pin, PUD_UP);
-	else if (state == PullDown)
+	else if (state == PullResistance::PullDown)
 		pullUpDnControl(pin, PUD_DOWN);
 	else
 		assert(false);
@@ -167,7 +167,7 @@ void GPIO::SetPullUpDown(const PullResistance &state)
 //==========================================================================
 void GPIO::SetOutput(const bool &high)
 {
-	assert(direction == DirectionOutput);
+	assert(direction == DataDirection::Output);
 
 	digitalWrite(pin, high ? 1 : 0);
 }
@@ -190,6 +190,6 @@ void GPIO::SetOutput(const bool &high)
 //==========================================================================
 bool GPIO::GetInput()
 {
-	assert(direction == DirectionInput);
+	assert(direction == DataDirection::Input);
 	return digitalRead(pin) == 1;
 }

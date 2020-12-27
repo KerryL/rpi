@@ -10,16 +10,16 @@
 class GPIO
 {
 public:
-	enum DataDirection
+	enum class DataDirection
 	{
-		DirectionInput,
-		DirectionOutput,
-		DirectionPWMOutput
+		Input,
+		Output,
+		PWMOutput
 	};
 
-	enum PullResistance
+	enum class PullResistance
 	{
-		PullOff,
+		Off,
 		PullUp,
 		PullDown
 	};

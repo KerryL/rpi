@@ -13,18 +13,18 @@
 class Interrupt : public GPIO
 {
 public:
-	enum EdgeDirection
+	enum class EdgeDirection
 	{
-		EdgeRising,
-		EdgeFalling,
-		EdgeBoth,
-		EdgePreconfigured
+		Rising,
+		Falling,
+		Both,
+		Preconfigured
 	};
 
 	typedef void (*InterruptServiceRoutine)();
 
 	Interrupt(const int &pin, const InterruptServiceRoutine isr,
-		const EdgeDirection &edge = EdgeRising);
+		const EdgeDirection &edge = EdgeDirection::Rising);
 	virtual ~Interrupt() {}
 
 private:
