@@ -63,8 +63,30 @@ DS18B20::DS18B20(std::string deviceID,
 {
 	if (!initialized)
 	{
-		system("modprobe w1-gpio");
-		system("modprobe w1-therm");
+		int ret(system("modprobe w1-gpio"));
+		if (ret == -1)
+		{
+			outStream << "Failed to mount temperature sensor (modprobe w1-gpio):  " << strerror(errno) << std::endl;
+			return;
+		}
+		else if (ret == 127)
+		{
+			outStream << "Failed to mount temperature sensor (modprobe w1-gpio) - could not create child process" << std::endl;
+			return;
+		}
+		
+		ret = system("modprobe w1-therm");
+		if (ret == -1)
+		{
+			outStream << "Failed to mount temperature sensor (modprobe w1-therm):  " << strerror(errno) << std::endl;
+			return;
+		}
+		else if (ret == 127)
+		{
+			outStream << "Failed to mount temperature sensor (modprobe w1-therm) - could not create child process" << std::endl;
+			return;
+		}
+		
 		initialized = true;
 	}
 }

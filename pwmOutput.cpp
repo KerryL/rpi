@@ -43,7 +43,7 @@ const unsigned int PWMOutput::maxRange = 4096;
 //
 // Input Arguments:
 //		pin		= int, represents hardware pin number according to Wiring Pi
-//		mode	= PWMMode, indicating the style of PWM phasing to use
+//		newMode	= PWMMode, indicating the style of PWM phasing to use
 //
 // Output Arguments:
 //		None
@@ -52,10 +52,10 @@ const unsigned int PWMOutput::maxRange = 4096;
 //		None
 //
 //==========================================================================
-PWMOutput::PWMOutput(int pin, PWMMode mode) : GPIO(pin, DirectionPWMOutput)
+PWMOutput::PWMOutput(int pin, PWMMode newMode) : GPIO(pin, DataDirection::Output)
 {
 	SetDutyCycle(0.0);
-	SetMode(mode);
+	SetMode(newMode);
 
 	range = 1024;
 	
@@ -71,7 +71,7 @@ PWMOutput::PWMOutput(int pin, PWMMode mode) : GPIO(pin, DirectionPWMOutput)
 // Description:		Sets the duty cycle of the PWM output.
 //
 // Input Arguments:
-//		duty	= double, must range from 0.0 to 1.0
+//		newDuty	= double, must range from 0.0 to 1.0
 //
 // Output Arguments:
 //		None
@@ -80,11 +80,11 @@ PWMOutput::PWMOutput(int pin, PWMMode mode) : GPIO(pin, DirectionPWMOutput)
 //		None
 //
 //==========================================================================
-void PWMOutput::SetDutyCycle(double duty)
+void PWMOutput::SetDutyCycle(double newDuty)
 {
-	assert(duty >= 0.0 && duty <= 1.0);
+	assert(newDuty >= 0.0 && newDuty <= 1.0);
 
-	this->duty = duty;
+	duty = newDuty;
 	pwmWrite(pin, duty * range);
 }
 
@@ -95,7 +95,7 @@ void PWMOutput::SetDutyCycle(double duty)
 // Description:		Sets the PWM mode.
 //
 // Input Arguments:
-//		mode	= PWMMode, use ModeBalanced for phase-correct PWM (better for driving motors),
+//		newMode	= PWMMode, use ModeBalanced for phase-correct PWM (better for driving motors),
 //				  and ModeMarkSpace for classical on-then-off style PWM.
 //
 // Output Arguments:
@@ -105,16 +105,16 @@ void PWMOutput::SetDutyCycle(double duty)
 //		None
 //
 //==========================================================================
-void PWMOutput::SetMode(PWMMode mode)
+void PWMOutput::SetMode(PWMMode newMode)
 {
-	if (mode == ModeBalanced)
+	if (newMode == PWMMode::Balanced)
 		pwmSetMode(PWM_MODE_BAL);
-	else if (mode == ModeMarkSpace)
+	else if (newMode == PWMMode::MarkSpace)
 		pwmSetMode(PWM_MODE_MS);
 	else
 		assert(false);
 
-	this->mode = mode;
+	mode = newMode;
 }
 
 //==========================================================================
@@ -124,7 +124,7 @@ void PWMOutput::SetMode(PWMMode mode)
 // Description:		Sets the PWM range (resolution).  Default is 1024.
 //
 // Input Arguments:
-//		range	= unsigned int
+//		newRange	= unsigned int
 //
 // Output Arguments:
 //		None
@@ -133,12 +133,12 @@ void PWMOutput::SetMode(PWMMode mode)
 //		None
 //
 //==========================================================================
-void PWMOutput::SetRange(unsigned int range)
+void PWMOutput::SetRange(unsigned int newRange)
 {
-	assert(range <= maxRange);
+	assert(newRange <= maxRange);
 
-	pwmSetRange(range);
-	this->range = range;
+	pwmSetRange(newRange);
+	range = newRange;
 	SetDutyCycle(duty);
 }
 
@@ -160,7 +160,7 @@ void PWMOutput::SetRange(unsigned int range)
 //					accuracy anyway.
 //
 // Input Arguments:
-//		frequency		= double [Hz]
+//		newFrequency	= double [Hz]
 //		minResolution	= unsigned int
 //
 // Output Arguments:
@@ -171,13 +171,13 @@ void PWMOutput::SetRange(unsigned int range)
 //		bounds or wrong PWM mode)
 //
 //==========================================================================
-bool PWMOutput::SetFrequency(double frequency, unsigned int minResolution)
+bool PWMOutput::SetFrequency(double newFrequency, unsigned int minResolution)
 {
 	unsigned int newRange, divisor;
 
-	if (mode == ModeMarkSpace)
+	if (mode == PWMMode::MarkSpace)
 	{
-		const unsigned int rangeDivisorProduct = floor(pwmClockFrequency / frequency + 0.5);
+		const unsigned int rangeDivisorProduct = floor(pwmClockFrequency / newFrequency + 0.5);
 		divisor = 1;
 
 		// Make sure the frequency is within the range we can attempt

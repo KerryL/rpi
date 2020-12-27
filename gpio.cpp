@@ -137,7 +137,7 @@ void GPIO::SetDataDirection(const DataDirection &direction)
 //==========================================================================
 void GPIO::SetPullUpDown(const PullResistance &state)
 {
-	assert(state == PullResistance::PullOff || direction == DataDirection::Input);
+	assert(state == PullResistance::Off || direction == DataDirection::Input);
 
 	if (state == PullResistance::Off)
 		pullUpDnControl(pin, PUD_OFF);

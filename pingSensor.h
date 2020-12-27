@@ -29,7 +29,7 @@ private:
 	typedef std::chrono::high_resolution_clock Clock;
 	Clock::duration MeasureEchoPulse();
 	
-	void PingISR();
+	static void PingISR();
 	
 	enum class State
 	{
@@ -39,10 +39,12 @@ private:
 		Done
 	};
 	
-	State state = State::Idle;
+	// TODO:  Note use of static methods here prevent use of more than one Ping))) sensor at a time.
+	// Calling code must ensure we're only requesting measurements from one device at a time.
+	static State state;
 
-	Clock::time_point startTime;
-	Clock::time_point stopTime;
+	static Clock::time_point startTime;
+	static Clock::time_point stopTime;
 };
 
 #endif// PING_SENSOR_H_

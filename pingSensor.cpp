@@ -11,6 +11,10 @@
 #include <thread>
 #include <cassert>
 
+PingSensor::State PingSensor::state(PingSensor::State::Idle);
+PingSensor::Clock::time_point PingSensor::startTime;
+PingSensor::Clock::time_point PingSensor::stopTime;
+
 PingSensor::PingSensor(const unsigned int& triggerPin, const unsigned int& echoPin)
 	: trigger(triggerPin, GPIO::DataDirection::Output), echo(echoPin, &PingSensor::PingISR, Interrupt::EdgeDirection::Both)
 {

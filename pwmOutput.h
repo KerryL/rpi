@@ -13,21 +13,21 @@
 class PWMOutput : public GPIO
 {
 public:
-	enum PWMMode
+	enum class PWMMode
 	{
-		ModeBalanced,
-		ModeMarkSpace
+		Balanced,
+		MarkSpace
 	};
 
-	PWMOutput(int pin = 1, PWMMode mode = ModeMarkSpace);
+	PWMOutput(int pin = 1, PWMMode mode = PWMMode::MarkSpace);
 
-	void SetDutyCycle(double duty);
-	void SetMode(PWMMode mode);
-	void SetRange(unsigned int range);
-	bool SetFrequency(double frequency, unsigned int minResolution = 100);
+	void SetDutyCycle(double newDuty);
+	void SetMode(PWMMode newMode);
+	void SetRange(unsigned int newRange);
+	bool SetFrequency(double newFrequency, unsigned int minResolution = 100);
 
-	double GetDutyCycle(void) const { return duty; };
-	double GetFrequency(void) const { return frequency; };
+	double GetDutyCycle() const { return duty; }
+	double GetFrequency() const { return frequency; }
 
 private:
 	static const double pwmClockFrequency;// [Hz]
