@@ -8,7 +8,7 @@
 #define PING_SENSOR_H_
 
 // Local heades
-#include "rpi/interrupt.h"
+#include "rpi/gpio.h"
 
 // Standard C++ headers
 #include <chrono>
@@ -22,29 +22,12 @@ public:
 
 private:
 	GPIO trigger;
-	Interrupt echo;
+	GPIO echo;
 	
 	void SendTrigger();
 	
 	typedef std::chrono::high_resolution_clock Clock;
-	Clock::duration MeasureEchoPulse();
-	
-	static void PingISR();
-	
-	enum class State
-	{
-		Idle,
-		WaitingForRisingEdge,
-		WaitingForFallingEdge,
-		Done
-	};
-	
-	// TODO:  Note use of static methods here prevent use of more than one Ping))) sensor at a time.
-	// Calling code must ensure we're only requesting measurements from one device at a time.
-	static State state;
-
-	static Clock::time_point startTime;
-	static Clock::time_point stopTime;
+	bool MeasureEchoPulse(Clock::duration& duration);
 };
 
 #endif// PING_SENSOR_H_
